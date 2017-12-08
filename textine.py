@@ -1,6 +1,10 @@
 import nltk
 import networkx as nx
+from networkx.algorithms.link_analysis.pagerank_alg import pagerank
 import re
+import operator
+from textblob import TextBlob
+
 
 
 def decontract(text):
@@ -19,8 +23,11 @@ def decontract(text):
 	return text
 
 def preprocess(raw):
-	tokens = nltk.word_tokenize(raw)
-	return tokens
+	blob = TextBlob(raw)
+	return blob.noun_phrases
+
+	# tokens = nltk.word_tokenize(raw)
+	# return tokens
 
 def create_graph(tokens, dist):
 	graph = nx.Graph()
@@ -36,3 +43,8 @@ def create_graph(tokens, dist):
 
 with open('input.txt', 'r') as f:
 	raw = f.read()
+
+tokens = preprocess(raw)
+graph = create_graph(tokens, 5)
+pr = pagerank(graph)
+print(sorted(pr.items(), key=operator.itemgetter(1), reverse=True)[:10])
